@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Premier Prospect — Agent App</title>
+<!--
+═══════════════════════════════════════════════════════════════════
+  PREMIER PROSPECT™ AGENT APP
+  Setup: Edit the two lines below with your Supabase credentials.
+  Then drop this file into any web server or GitHub Pages repo.
+═══════════════════════════════════════════════════════════════════
+-->
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ── RESET & ROOT ─────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --hot:#DC5B2C;--hot-bg:#FEF2EE;--hot-mid:#F97316;
+  --warm:#F59E0B;--warm-bg:#FFFBEB;
+  --cool:#16A34A;--cool-bg:#F0FDF4;
+  --neutral:#6B7280;--neutral-bg:#F3F4F6;
+  --ink:#1C1917;--ink2:#44403C;--ink3:#78716C;
+  --paper:#FAF9F7;--paper2:#F5F3F0;--paper3:#EAE8E4;
+  --white:#FFFFFF;
+  --blue:#2563EB;--blue-bg:#EFF6FF;
+  --radius:12px;--radius-sm:8px;--radius-xs:5px;
+  --shadow:0 1px 3px rgba(0,0,0,.08),0 4px 12px rgba(0,0,0,.05);
+  --shadow-lg:0 8px 24px rgba(0,0,0,.10),0 2px 6px rgba(0,0,0,.06);
+  --sidebar-w:260px;
+  --nav-h:64px;
+}
+html{font-size:15px;-webkit-text-size-adjust:100%}
+body{font-family:'Inter',sans-serif;background:var(--paper);color:var(--ink);line-height:1.6;min-height:100vh;overflow-x:hidden}
+button{font-family:inherit;cursor:pointer;border:none;outline:none;background:none}
+input,textarea,select{font-family:inherit;outline:none;border:none}
+a{text-decoration:none;color:inherit}
+
+/* ── TYPOGRAPHY ───────────────────────────────────────────────── */
+.syne{font-family:'Syne',sans-serif}
+h1,h2,h3{font-family:'Syne',sans-serif;font-weight:700;color:var(--ink)}
+.t-xxl{font-size:2rem;letter-spacing:-.03em;line-height:1.1}
+.t-xl{font-size:1.4rem;letter-spacing:-.02em;line-height:1.2}
+.t-lg{font-size:1.1rem;font-weight:600;letter-spacing:-.01em}
+.t-base{font-size:.9rem}
+.t-sm{font-size:.8rem}
+.t-xs{font-size:.72rem}
+.t-mono{font-variant-numeric:tabular-nums;letter-spacing:.01em}
+.t-ink2{color:var(--ink2)}
+.t-ink3{color:var(--ink3)}
+.fw-500{font-weight:500}
+.fw-600{font-weight:600}
+.fw-700{font-weight:700}
+
+/* ── LAYOUT ───────────────────────────────────────────────────── */
+.app-shell{display:flex;min-height:100vh}
+.sidebar{width:var(--sidebar-w);background:var(--white);border-right:1px solid var(--paper3);position:fixed;top:0;left:0;height:100vh;display:flex;flex-direction:column;z-index:50;overflow:hidden;transition:transform .25s ease}
+.main-area{margin-left:var(--sidebar-w);flex:1;min-height:100vh;display:flex;flex-direction:column}
+.top-bar{background:var(--white);border-bottom:1px solid var(--paper3);padding:0 24px;height:56px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:40}
+.content{flex:1;padding:24px;max-width:900px}
+
+/* ── SIDEBAR ──────────────────────────────────────────────────── */
+.sidebar-logo{padding:20px 20px 12px;border-bottom:1px solid var(--paper3)}
+.logo-mark{display:flex;align-items:center;gap:8px}
+.logo-dot{width:10px;height:10px;border-radius:50%;background:var(--hot)}
+.logo-text{font-family:'Syne',sans-serif;font-size:.85rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ink)}
+.sidebar-pulse{font-size:.7rem;color:var(--cool);font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin-top:2px;display:flex;align-items:center;gap:5px}
+.pulse-dot{width:6px;height:6px;border-radius:50%;background:var(--cool);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+.nav-section{padding:16px 12px 8px;flex:1;overflow-y:auto}
+.nav-label{font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);padding:0 8px;margin-bottom:6px}
+.nav-btn{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--radius-xs);width:100%;font-size:.85rem;font-weight:500;color:var(--ink2);transition:all .15s;margin-bottom:2px;cursor:pointer;position:relative}
+.nav-btn:hover{background:var(--paper);color:var(--ink)}
+.nav-btn.active{background:var(--paper2);color:var(--ink);font-weight:600}
+.nav-btn .nav-icon{font-size:1rem;width:20px;text-align:center;flex-shrink:0}
+.nav-count{margin-left:auto;background:var(--hot);color:#fff;font-size:.65rem;font-weight:700;padding:2px 6px;border-radius:20px;font-family:'Inter',sans-serif;min-width:20px;text-align:center}
+.nav-count.warm{background:var(--warm)}
+.nav-count.cool{background:var(--cool)}
+.sidebar-footer{padding:12px;border-top:1px solid var(--paper3)}
+.freshness-bar{background:var(--paper2);border-radius:var(--radius-xs);padding:10px 12px}
+.freshness-label{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:4px}
+.freshness-time{font-size:.8rem;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.freshness-next{font-size:.7rem;color:var(--ink3);margin-top:2px}
+
+/* ── MOBILE NAV ───────────────────────────────────────────────── */
+.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;height:var(--nav-h);background:var(--white);border-top:1px solid var(--paper3);z-index:50;padding:0 4px;padding-bottom:env(safe-area-inset-bottom)}
+.mobile-nav-inner{display:flex;align-items:center;justify-content:space-around;height:64px}
+.mnav-btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 12px;border-radius:var(--radius-xs);flex:1;transition:all .15s;position:relative;cursor:pointer}
+.mnav-btn:active{background:var(--paper2)}
+.mnav-btn .mnav-icon{font-size:1.2rem}
+.mnav-label{font-size:.6rem;font-weight:600;letter-spacing:.04em;color:var(--ink3)}
+.mnav-btn.active .mnav-label{color:var(--hot)}
+.mnav-btn.active .mnav-icon{filter:none}
+.mnav-badge{position:absolute;top:6px;right:6px;background:var(--hot);color:#fff;font-size:.55rem;font-weight:800;padding:1px 4px;border-radius:20px;min-width:14px;text-align:center}
+
+/* ── TOP BAR ──────────────────────────────────────────────────── */
+.menu-btn{display:none;font-size:1.2rem;padding:6px;border-radius:var(--radius-xs);color:var(--ink2)}
+.search-wrap{display:flex;align-items:center;background:var(--paper2);border:1px solid var(--paper3);border-radius:var(--radius-sm);padding:6px 12px;gap:8px;flex:1;max-width:400px;transition:border-color .15s}
+.search-wrap:focus-within{border-color:var(--hot);background:var(--white)}
+.search-icon{color:var(--ink3);font-size:.9rem;flex-shrink:0}
+.search-input{background:transparent;font-size:.85rem;color:var(--ink);flex:1;min-width:0}
+.search-input::placeholder{color:var(--ink3)}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.icon-btn{width:36px;height:36px;border-radius:var(--radius-xs);display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--ink2);background:var(--paper2);transition:all .15s}
+.icon-btn:hover{background:var(--paper3);color:var(--ink)}
+
+/* ── PAGE TITLE AREA ──────────────────────────────────────────── */
+.page-header{margin-bottom:20px}
+.page-title{font-family:'Syne',sans-serif;font-size:1.35rem;font-weight:800;color:var(--ink);letter-spacing:-.02em}
+.page-sub{font-size:.82rem;color:var(--ink3);margin-top:2px}
+
+/* ── FILTER BAR ───────────────────────────────────────────────── */
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;align-items:center}
+.filter-chip{padding:6px 12px;border-radius:20px;font-size:.78rem;font-weight:600;background:var(--white);border:1.5px solid var(--paper3);color:var(--ink2);cursor:pointer;transition:all .15s;white-space:nowrap}
+.filter-chip:hover{border-color:var(--ink3);color:var(--ink)}
+.filter-chip.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.filter-chip.hot-filter.active{background:var(--hot);border-color:var(--hot)}
+.filter-chip.warm-filter.active{background:var(--warm);border-color:var(--warm);color:var(--ink)}
+.filter-chip.cool-filter.active{background:var(--cool);border-color:var(--cool)}
+.filter-select{padding:6px 12px;border-radius:20px;font-size:.78rem;font-weight:600;background:var(--white);border:1.5px solid var(--paper3);color:var(--ink2);cursor:pointer;appearance:none;-webkit-appearance:none;padding-right:28px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2378716C' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
+
+/* ── URGENCY LEGEND ───────────────────────────────────────────── */
+.legend-bar{background:var(--white);border:1px solid var(--paper3);border-radius:var(--radius-sm);padding:12px 16px;margin-bottom:16px;display:flex;gap:20px;flex-wrap:wrap;align-items:center}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:.75rem;font-weight:500;color:var(--ink2)}
+.legend-swatch{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.legend-divider{width:1px;height:16px;background:var(--paper3)}
+
+/* ── LEAD CARDS ───────────────────────────────────────────────── */
+.leads-list{display:flex;flex-direction:column;gap:10px}
+.lead-card{background:var(--white);border:1px solid var(--paper3);border-radius:var(--radius);cursor:pointer;transition:all .18s;overflow:hidden;display:flex;position:relative}
+.lead-card:hover{box-shadow:var(--shadow);border-color:var(--paper3);transform:translateY(-1px)}
+.lead-card:active{transform:translateY(0)}
+.lead-strip{width:5px;flex-shrink:0}
+.lead-strip.hot{background:var(--hot)}
+.lead-strip.warm{background:var(--warm)}
+.lead-strip.cool{background:var(--cool)}
+.lead-strip.neutral{background:var(--neutral)}
+.lead-body{flex:1;padding:14px 16px;min-width:0}
+.lead-top{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px}
+.lead-name{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;color:var(--ink);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lead-badge{flex-shrink:0;display:flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-size:.68rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.lead-badge.hot{background:var(--hot-bg);color:var(--hot)}
+.lead-badge.warm{background:var(--warm-bg);color:#92400E}
+.lead-badge.cool{background:var(--cool-bg);color:var(--cool)}
+.lead-badge.neutral{background:var(--neutral-bg);color:var(--neutral)}
+.lead-location{font-size:.78rem;color:var(--ink3);margin-bottom:6px;display:flex;align-items:center;gap:4px}
+.lead-signals{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.signal-tag{font-size:.68rem;font-weight:500;padding:2px 7px;border-radius:3px;background:var(--paper2);color:var(--ink2);border:1px solid var(--paper3)}
+.lead-footer{display:flex;align-items:center;gap:12px}
+.lead-score{font-family:'Syne',sans-serif;font-size:.78rem;font-weight:800;color:var(--ink3)}
+.lead-score span{color:var(--ink);font-size:.88rem}
+.lead-meta{font-size:.72rem;color:var(--ink3);margin-left:auto;display:flex;align-items:center;gap:10px}
+.lead-status-dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:3px}
+.lead-status-dot.new{background:var(--hot)}
+.lead-status-dot.contacted{background:var(--warm)}
+.lead-status-dot.qualified{background:var(--cool)}
+.lead-status-dot.watching{background:var(--neutral)}
+.match-icon{font-size:.7rem;background:var(--blue-bg);color:var(--blue);padding:2px 6px;border-radius:3px;font-weight:600}
+
+/* ── EMPTY STATES ─────────────────────────────────────────────── */
+.empty-state{padding:60px 24px;text-align:center}
+.empty-icon{font-size:2.5rem;margin-bottom:12px}
+.empty-title{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);margin-bottom:6px}
+.empty-sub{font-size:.82rem;color:var(--ink3);max-width:300px;margin:0 auto;line-height:1.6}
+
+/* ── LOADING ──────────────────────────────────────────────────── */
+.skeleton{background:linear-gradient(90deg,var(--paper2) 25%,var(--paper3) 50%,var(--paper2) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:var(--radius-xs)}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.sk-card{height:100px;border-radius:var(--radius);margin-bottom:10px}
+
+/* ── STAT CARDS ───────────────────────────────────────────────── */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:20px}
+.stat-card{background:var(--white);border:1px solid var(--paper3);border-radius:var(--radius);padding:16px;cursor:pointer;transition:all .15s}
+.stat-card:hover{box-shadow:var(--shadow);transform:translateY(-1px)}
+.stat-card.hot-stat{border-left:4px solid var(--hot)}
+.stat-card.warm-stat{border-left:4px solid var(--warm)}
+.stat-card.cool-stat{border-left:4px solid var(--cool)}
+.stat-card.neutral-stat{border-left:4px solid var(--neutral)}
+.stat-card.match-stat{border-left:4px solid var(--blue)}
+.stat-num{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;line-height:1;margin-bottom:4px}
+.stat-num.hot{color:var(--hot)}
+.stat-num.warm{color:var(--warm)}
+.stat-num.cool{color:var(--cool)}
+.stat-num.match{color:var(--blue)}
+.stat-label{font-size:.72rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3)}
+.stat-action{font-size:.7rem;color:var(--hot);font-weight:600;margin-top:6px}
+
+/* ── SECTION HEADERS ──────────────────────────────────────────── */
+.section-head{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.section-title{font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700;color:var(--ink)}
+.section-count{font-size:.72rem;font-weight:700;background:var(--paper2);color:var(--ink3);padding:2px 7px;border-radius:20px}
+.section-link{margin-left:auto;font-size:.75rem;font-weight:600;color:var(--hot);cursor:pointer}
+
+/* ── ACTION BUTTONS ───────────────────────────────────────────── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 18px;border-radius:var(--radius-sm);font-size:.82rem;font-weight:600;transition:all .15s;cursor:pointer;white-space:nowrap}
+.btn-primary{background:var(--hot);color:#fff}
+.btn-primary:hover{background:#C4501F}
+.btn-secondary{background:var(--paper2);color:var(--ink);border:1px solid var(--paper3)}
+.btn-secondary:hover{background:var(--paper3)}
+.btn-ghost{background:transparent;color:var(--ink2)}
+.btn-ghost:hover{background:var(--paper2)}
+.btn-sm{padding:6px 12px;font-size:.76rem}
+.btn-full{width:100%}
+.btn-danger{background:#FEF2F2;color:#DC2626;border:1px solid #FECACA}
+.btn-danger:hover{background:#FEE2E2}
+
+/* ── DRAWER ───────────────────────────────────────────────────── */
+.drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:200;opacity:0;pointer-events:none;transition:opacity .25s;backdrop-filter:blur(2px)}
+.drawer-overlay.open{opacity:1;pointer-events:all}
+.drawer{position:fixed;bottom:0;left:0;right:0;background:var(--white);border-radius:var(--radius) var(--radius) 0 0;z-index:201;transform:translateY(100%);transition:transform .3s cubic-bezier(.25,.46,.45,.94);max-height:92vh;overflow:hidden;display:flex;flex-direction:column}
+.drawer.open{transform:translateY(0)}
+.drawer-handle{width:36px;height:4px;border-radius:2px;background:var(--paper3);margin:12px auto 0;flex-shrink:0}
+.drawer-header{padding:16px 20px 12px;border-bottom:1px solid var(--paper3);flex-shrink:0}
+.drawer-title{font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;color:var(--ink);margin-bottom:2px}
+.drawer-loc{font-size:.78rem;color:var(--ink3)}
+.drawer-scroll{flex:1;overflow-y:auto;padding:16px 20px 32px}
+.drawer-section{margin-bottom:20px}
+.drawer-section-title{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--paper3)}
+.detail-row{display:flex;justify-content:space-between;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--paper2)}
+.detail-row:last-child{border-bottom:none}
+.detail-key{font-size:.78rem;color:var(--ink3);font-weight:500}
+.detail-val{font-size:.82rem;color:var(--ink);font-weight:600;text-align:right;max-width:60%}
+.signal-block{background:var(--paper2);border-radius:var(--radius-xs);padding:10px 12px;margin-bottom:6px}
+.signal-block-name{font-size:.8rem;font-weight:700;color:var(--ink);margin-bottom:2px}
+.signal-block-detail{font-size:.74rem;color:var(--ink3);line-height:1.5}
+.score-ring-wrap{display:flex;align-items:center;gap:16px;padding:12px;background:var(--paper2);border-radius:var(--radius-sm);margin-bottom:16px}
+.score-ring{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;flex-shrink:0;border:3px solid}
+.score-ring.hot{background:var(--hot-bg);color:var(--hot);border-color:var(--hot)}
+.score-ring.warm{background:var(--warm-bg);color:var(--warm);border-color:var(--warm)}
+.score-ring.cool{background:var(--cool-bg);color:var(--cool);border-color:var(--cool)}
+.score-ring.neutral{background:var(--neutral-bg);color:var(--neutral);border-color:var(--neutral)}
+.score-explain-title{font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700;color:var(--ink)}
+.score-explain-text{font-size:.76rem;color:var(--ink3);line-height:1.6;margin-top:2px}
+
+/* Status */
+.status-picker{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px}
+.status-opt{padding:8px;border-radius:var(--radius-xs);border:1.5px solid var(--paper3);text-align:center;font-size:.76rem;font-weight:600;color:var(--ink2);cursor:pointer;transition:all .15s}
+.status-opt.selected{border-color:var(--hot);background:var(--hot-bg);color:var(--hot)}
+.status-opt:hover:not(.selected){background:var(--paper2)}
+
+/* Notes */
+.notes-area{width:100%;min-height:90px;resize:vertical;background:var(--paper2);border:1.5px solid var(--paper3);border-radius:var(--radius-xs);padding:10px;font-size:.82rem;color:var(--ink);line-height:1.6;transition:border-color .15s}
+.notes-area:focus{border-color:var(--hot);background:var(--white);box-shadow:0 0 0 3px rgba(220,91,44,.08)}
+.notes-status{font-size:.7rem;color:var(--ink3);margin-top:4px;height:16px;transition:all .15s}
+.notes-status.saving{color:var(--warm)}
+.notes-status.saved{color:var(--cool)}
+
+/* Match card */
+.match-card{background:var(--blue-bg);border:1px solid #BFDBFE;border-radius:var(--radius-sm);padding:12px;margin-bottom:8px}
+.match-card-head{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.match-badge{font-size:.65rem;font-weight:700;background:var(--blue);color:#fff;padding:2px 7px;border-radius:20px;letter-spacing:.04em}
+.match-price{font-family:'Syne',sans-serif;font-size:.85rem;font-weight:700;color:var(--blue)}
+.match-detail{font-size:.74rem;color:var(--ink3);line-height:1.5}
+
+/* Quick actions */
+.quick-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.quick-action-btn{padding:10px;border-radius:var(--radius-xs);border:1.5px solid var(--paper3);font-size:.76rem;font-weight:600;color:var(--ink2);background:var(--white);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px}
+.quick-action-btn:hover{background:var(--paper2);border-color:var(--ink3);color:var(--ink)}
+.quick-action-btn.primary-action{background:var(--hot);color:#fff;border-color:var(--hot)}
+.quick-action-btn.primary-action:hover{background:#C4501F}
+
+/* ── MATCHES PAGE ─────────────────────────────────────────────── */
+.match-opportunity{background:var(--white);border:1.5px solid #BFDBFE;border-radius:var(--radius);padding:16px;margin-bottom:10px;cursor:pointer;transition:all .18s;position:relative;overflow:hidden}
+.match-opportunity::before{content:'';position:absolute;top:0;left:0;bottom:0;width:4px;background:var(--blue)}
+.match-opportunity:hover{box-shadow:var(--shadow);transform:translateY(-1px)}
+.match-opp-head{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px}
+.match-opp-title{font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700;color:var(--ink);flex:1}
+.match-score-badge{background:var(--blue);color:#fff;font-size:.7rem;font-weight:700;padding:3px 8px;border-radius:20px;white-space:nowrap;font-family:'Syne',sans-serif}
+.match-opp-pitch{background:#EFF6FF;border-radius:var(--radius-xs);padding:9px 12px;margin-bottom:8px}
+.match-opp-pitch-label{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);margin-bottom:2px}
+.match-opp-pitch-text{font-size:.78rem;color:var(--ink2);line-height:1.6;font-style:italic}
+.match-opp-details{display:flex;gap:16px;flex-wrap:wrap}
+.match-opp-detail{font-size:.74rem;color:var(--ink3)}
+.match-opp-detail strong{color:var(--ink);font-weight:600}
+
+/* ── QUEUE / MY ITEMS ─────────────────────────────────────────── */
+.queue-item{background:var(--white);border:1px solid var(--paper3);border-radius:var(--radius);padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .15s}
+.queue-item:hover{box-shadow:var(--shadow)}
+.queue-item-strip{width:4px;height:40px;border-radius:2px;flex-shrink:0}
+.queue-item-body{flex:1;min-width:0}
+.queue-item-name{font-weight:600;font-size:.87rem;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.queue-item-meta{font-size:.74rem;color:var(--ink3);margin-top:2px}
+.queue-item-action{font-size:.74rem;font-weight:700;color:var(--hot);white-space:nowrap}
+.queue-remove{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--paper2);color:var(--ink3);font-size:.9rem;flex-shrink:0;cursor:pointer;transition:all .15s}
+.queue-remove:hover{background:#FEE2E2;color:#DC2626}
+
+/* ── SYSTEM STATUS ────────────────────────────────────────────── */
+.status-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.status-block{background:var(--white);border:1px solid var(--paper3);border-radius:var(--radius);padding:14px}
+.status-block-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.status-block-title{font-size:.8rem;font-weight:700;color:var(--ink)}
+.status-indicator{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.status-indicator.live{background:var(--cool);animation:pulse 2.5s infinite}
+.status-indicator.staged{background:var(--warm)}
+.status-indicator.offline{background:var(--neutral)}
+.status-indicator.blocked{background:var(--hot)}
+.status-block-detail{font-size:.74rem;color:var(--ink3);line-height:1.6}
+.status-block-value{font-size:.82rem;font-weight:600;color:var(--ink);margin-top:2px}
+
+/* ── TOAST ────────────────────────────────────────────────────── */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:10px 18px;border-radius:var(--radius-sm);font-size:.8rem;font-weight:600;opacity:0;transition:all .3s;z-index:500;pointer-events:none;white-space:nowrap;box-shadow:var(--shadow-lg)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.success{background:var(--cool)}
+.toast.error{background:#DC2626}
+
+/* ── SCROLLBAR ────────────────────────────────────────────────── */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--paper3);border-radius:2px}
+::-webkit-scrollbar-thumb:hover{background:var(--ink3)}
+
+/* ── RESPONSIVE ───────────────────────────────────────────────── */
+@media(max-width:768px){
+  .sidebar{display:none}
+  .main-area{margin-left:0;padding-bottom:var(--nav-h)}
+  .mobile-nav{display:flex}
+  .menu-btn{display:flex}
+  .content{padding:16px}
+  .stat-grid{grid-template-columns:1fr 1fr}
+  .status-grid{grid-template-columns:1fr}
+  .quick-actions{grid-template-columns:1fr}
+  .status-picker{grid-template-columns:1fr 1fr}
+  .pgrid-2{grid-template-columns:1fr}
+  .legend-bar{gap:10px}
+}
+@media(max-width:400px){
+  .stat-grid{grid-template-columns:1fr 1fr}
+  .filter-bar{gap:6px}
+}
+
+/* ── UTILITY ──────────────────────────────────────────────────── */
+.hidden{display:none!important}
+.page{display:none}
+.page.active{display:block}
+.flex{display:flex}.items-center{align-items:center}.gap-8{gap:8px}.gap-12{gap:12px}
+.mt-4{margin-top:4px}.mt-8{margin-top:8px}.mt-12{margin-top:12px}.mt-16{margin-top:16px}
+.mb-8{margin-bottom:8px}.mb-12{margin-bottom:12px}.mb-16{margin-bottom:16px}
+.w-full{width:100%}
+</style>
+</head>
+<body>
+
+<!-- ── TOAST ── -->
+<div class="toast" id="toast"></div>
+
+<!-- ── DRAWER OVERLAY ── -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+
+<!-- ── LEAD DETAIL DRAWER ── -->
+<div class="drawer" id="leadDrawer">
+  <div class="drawer-handle"></div>
+  <div class="drawer-header">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+      <div style="flex:1;min-width:0">
+        <div class="drawer-title" id="drawerTitle">Loading...</div>
+        <div class="drawer-loc" id="drawerLoc"></div>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="closeDrawer()" style="flex-shrink:0;font-size:1.1rem;padding:4px 8px">✕</button>
+    </div>
+    <div id="drawerBadgeRow" style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap"></div>
+  </div>
+  <div class="drawer-scroll" id="drawerScroll">
+    <!-- Filled by JS -->
+  </div>
+</div>
+
+<!-- ── APP SHELL ── -->
+<div class="app-shell">
+
+  <!-- SIDEBAR (desktop) -->
+  <nav class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">
+        <div class="logo-dot"></div>
+        <div class="logo-text">Premier Prospect</div>
+      </div>
+      <div class="sidebar-pulse" id="pipelineStatus">
+        <div class="pulse-dot"></div>
+        <span>Pipeline live</span>
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label" style="margin-top:8px">Intelligence</div>
+      <button class="nav-btn active" data-page="leads" onclick="switchPage('leads',this)">
+        <span class="nav-icon">🔥</span>Hot Opportunities
+        <span class="nav-count" id="sidenav-hot">—</span>
+      </button>
+      <button class="nav-btn" data-page="matches" onclick="switchPage('matches',this)">
+        <span class="nav-icon">🤝</span>Buyer Matches
+        <span class="nav-count cool" id="sidenav-match">—</span>
+      </button>
+      <div class="nav-label" style="margin-top:16px">Outreach</div>
+      <button class="nav-btn" data-page="queue" onclick="switchPage('queue',this)">
+        <span class="nav-icon">📋</span>My Action Items
+        <span class="nav-count warm" id="sidenav-queue">0</span>
+      </button>
+      <div class="nav-label" style="margin-top:16px">System</div>
+      <button class="nav-btn" data-page="status" onclick="switchPage('status',this)">
+        <span class="nav-icon">⚡</span>Pipeline Status
+      </button>
+    </div>
+    <div class="sidebar-footer">
+      <div class="freshness-bar">
+        <div class="freshness-label">Data freshness</div>
+        <div class="freshness-time" id="sidebarFreshness">Loading...</div>
+        <div class="freshness-next" id="sidebarNext"></div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN AREA -->
+  <div class="main-area">
+
+    <!-- TOP BAR -->
+    <div class="top-bar">
+      <button class="menu-btn icon-btn" onclick="toggleMobileSidebar()">☰</button>
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input class="search-input" type="text" id="searchInput" placeholder="Search by address, name, or city…" oninput="handleSearch(this.value)">
+        <button id="searchClear" class="hidden" onclick="clearSearch()" style="font-size:.9rem;color:var(--ink3);background:none;cursor:pointer;">✕</button>
+      </div>
+      <div class="topbar-right">
+        <button class="icon-btn" onclick="refreshData()" title="Refresh data">↻</button>
+      </div>
+    </div>
+
+    <!-- PAGES -->
+    <div class="content">
+
+      <!-- PAGE: LEADS -->
+      <div id="page-leads" class="page active">
+        <div class="page-header">
+          <h1 class="page-title">Hot Opportunities</h1>
+          <div class="page-sub">Homeowners showing signs they may want to sell — before it hits the market.</div>
+        </div>
+
+        <!-- Stat summary cards -->
+        <div class="stat-grid" id="statGrid">
+          <div class="stat-card hot-stat skeleton" style="height:80px"></div>
+          <div class="stat-card warm-stat skeleton" style="height:80px"></div>
+          <div class="stat-card cool-stat skeleton" style="height:80px"></div>
+          <div class="stat-card match-stat skeleton" style="height:80px"></div>
+        </div>
+
+        <!-- Legend -->
+        <div class="legend-bar">
+          <div class="legend-item"><div class="legend-swatch" style="background:var(--hot)"></div><strong>Act Now</strong> — Score 75+, call today</div>
+          <div class="legend-divider"></div>
+          <div class="legend-item"><div class="legend-swatch" style="background:var(--warm)"></div><strong>Follow Up</strong> — Score 60–74, this week</div>
+          <div class="legend-divider"></div>
+          <div class="legend-item"><div class="legend-swatch" style="background:var(--cool)"></div><strong>Watch</strong> — Score 40–59, monitor</div>
+          <div class="legend-divider"></div>
+          <div class="legend-item"><div class="legend-swatch" style="background:var(--neutral)"></div><strong>Early Signal</strong> — Score below 40</div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filter-bar">
+          <button class="filter-chip active" data-filter="all" onclick="setFilter('all',this)">All</button>
+          <button class="filter-chip hot-filter" data-filter="hot" onclick="setFilter('hot',this)">🔥 Act Now</button>
+          <button class="filter-chip warm-filter" data-filter="warm" onclick="setFilter('warm',this)">⚡ Follow Up</button>
+          <button class="filter-chip cool-filter" data-filter="cool" onclick="setFilter('cool',this)">👁 Watch</button>
+          <select class="filter-select" id="countyFilter" onchange="applyFilters()">
+            <option value="">All Areas</option>
+            <option value="Salt Lake">Salt Lake</option>
+            <option value="Utah">Utah County</option>
+            <option value="Weber">Weber</option>
+            <option value="Davis">Davis</option>
+            <option value="Wasatch">Wasatch</option>
+            <option value="Summit">Summit</option>
+          </select>
+        </div>
+
+        <!-- Lead list -->
+        <div id="leadsList">
+          <div class="sk-card skeleton"></div>
+          <div class="sk-card skeleton" style="height:85px"></div>
+          <div class="sk-card skeleton" style="height:95px"></div>
+        </div>
+
+        <div id="leadsEmpty" class="empty-state hidden">
+          <div class="empty-icon">🏠</div>
+          <div class="empty-title">No leads match your filters</div>
+          <div class="empty-sub">The pipeline runs every morning at 4 AM. Try adjusting your filters or check back after the next update.</div>
+        </div>
+      </div>
+
+      <!-- PAGE: MATCHES -->
+      <div id="page-matches" class="page">
+        <div class="page-header">
+          <h1 class="page-title">Buyer Matches</h1>
+          <div class="page-sub">Distressed sellers paired with ready buyers in the same area and price range — your exclusive edge.</div>
+        </div>
+        <div id="matchesList">
+          <div class="sk-card skeleton"></div>
+          <div class="sk-card skeleton" style="height:120px"></div>
+        </div>
+        <div id="matchesEmpty" class="empty-state hidden">
+          <div class="empty-icon">🤝</div>
+          <div class="empty-title">No buyer matches yet</div>
+          <div class="empty-sub">Matches appear when a distressed seller is in the same area and price range as a ready buyer. Check back after the 4 AM update.</div>
+        </div>
+      </div>
+
+      <!-- PAGE: QUEUE -->
+      <div id="page-queue" class="page">
+        <div class="page-header">
+          <h1 class="page-title">My Action Items</h1>
+          <div class="page-sub">Leads you've saved to work on. Add any lead to this list from its detail view.</div>
+        </div>
+        <div id="queueList"></div>
+        <div id="queueEmpty" class="empty-state">
+          <div class="empty-icon">📋</div>
+          <div class="empty-title">Your action list is empty</div>
+          <div class="empty-sub">Open any lead and tap "Add to My List" to save it here for follow-up.</div>
+        </div>
+      </div>
+
+      <!-- PAGE: STATUS -->
+      <div id="page-status" class="page">
+        <div class="page-header">
+          <h1 class="page-title">Pipeline Status</h1>
+          <div class="page-sub">How fresh is the data? What's connected? What's coming next.</div>
+        </div>
+        <div class="mb-16">
+          <div class="section-head"><div class="section-title">Data Freshness</div></div>
+          <div style="background:var(--white);border:1px solid var(--paper3);border-radius:var(--radius);padding:20px" id="freshnessBlock">
+            <div class="skeleton" style="height:60px"></div>
+          </div>
+        </div>
+        <div class="mb-16">
+          <div class="section-head"><div class="section-title">System Connections</div></div>
+          <div class="status-grid" id="statusGrid">
+            <div class="status-block skeleton" style="height:80px"></div>
+            <div class="status-block skeleton" style="height:80px"></div>
+            <div class="status-block skeleton" style="height:80px"></div>
+            <div class="status-block skeleton" style="height:80px"></div>
+          </div>
+        </div>
+        <div>
+          <div class="section-head"><div class="section-title">Signal Sources Active Today</div></div>
+          <div id="sourcesList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px"></div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main-area -->
+</div><!-- /app-shell -->
+
+<!-- MOBILE NAV -->
+<nav class="mobile-nav">
+  <div class="mobile-nav-inner">
+    <button class="mnav-btn active" data-page="leads" onclick="switchPage('leads',this)">
+      <span class="mnav-icon">🔥</span>
+      <span class="mnav-label">Leads</span>
+      <span class="mnav-badge" id="mnav-hot" style="display:none"></span>
+    </button>
+    <button class="mnav-btn" data-page="matches" onclick="switchPage('matches',this)">
+      <span class="mnav-icon">🤝</span>
+      <span class="mnav-label">Matches</span>
+    </button>
+    <button class="mnav-btn" data-page="queue" onclick="switchPage('queue',this)">
+      <span class="mnav-icon">📋</span>
+      <span class="mnav-label">My List</span>
+      <span class="mnav-badge" id="mnav-queue" style="display:none"></span>
+    </button>
+    <button class="mnav-btn" data-page="status" onclick="switchPage('status',this)">
+      <span class="mnav-icon">⚡</span>
+      <span class="mnav-label">Status</span>
+    </button>
+  </div>
+</nav>
+
+<script>
+/* ════════════════════════════════════════════════════════════════
+   CONFIGURATION — Edit these two values to connect your data
+   ════════════════════════════════════════════════════════════════ */
+const SUPABASE_URL = 'https://lbvaosyfikkpvcwksiph.supabase.co';
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY_HERE';
+/* ════════════════════════════════════════════════════════════════ */
+
+/* ── APP STATE ─────────────────────────────────────────────────── */
+const state = {
+  leads: [],
+  filtered: [],
+  matches: [],
+  queue: JSON.parse(localStorage.getItem('pp_queue') || '[]'),
+  filter: 'all',
+  search: '',
+  county: '',
+  kpi: {},
+  sources: [],
+  currentLead: null,
+  notesTimer: null,
+};
+
+/* ── SUPABASE FETCH ────────────────────────────────────────────── */
+async function sb(table, params = '') {
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}${params}`, {
+    headers: {
+      apikey: SUPABASE_ANON_KEY,
+      Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+      'Content-Type': 'application/json',
+    }
+  });
+  if (!r.ok) throw new Error(`${r.status}`);
+  return r.json();
+}
+
+async function sbPatch(table, match, data) {
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${match}`, {
+    method: 'PATCH',
+    headers: {
+      apikey: SUPABASE_ANON_KEY,
+      Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+      'Content-Type': 'application/json',
+      Prefer: 'return=minimal',
+    },
+    body: JSON.stringify(data),
+  });
+  return r.ok;
+}
+
+/* ── TIER / URGENCY LOGIC ──────────────────────────────────────── */
+function getUrgency(score) {
+  if (score >= 75) return { key: 'hot', label: 'Act Now', emoji: '🔥' };
+  if (score >= 60) return { key: 'warm', label: 'Follow Up', emoji: '⚡' };
+  if (score >= 40) return { key: 'cool', label: 'Watch', emoji: '👁' };
+  return { key: 'neutral', label: 'Early Signal', emoji: '📍' };
+}
+
+function scoreExplain(score, source, signals) {
+  if (score >= 75) return 'Multiple strong distress signals on this property. The seller window may be closing — reach out today.';
+  if (score >= 60) return 'Clear signs of seller motivation. Good candidate for Bryce pre-screen or a personal reach-out this week.';
+  if (score >= 40) return 'Early signals worth watching. Check again after the next pipeline update.';
+  return 'A single early signal. Keep an eye on this address for additional activity.';
+}
+
+function signalLabel(src) {
+  const map = {
+    nts: 'Foreclosure Filing', nod: 'Default Notice',
+    tax_lien: 'Tax Lien', tax_delinquency: 'Tax Delinquency',
+    ksl_fsbo: 'For Sale By Owner', obituary: 'Estate / Probate',
+    deed_transfer: 'Deed Transfer', hmda: 'Mortgage Activity',
+    fire_permit: 'Fire Permit', lir_parcel: 'Parcel Data',
+    probate: 'Probate Filed', lien_judgment: 'Judgment Lien',
+    mls_expired: 'Expired Listing', mls_withdrawn: 'Withdrawn Listing',
+    mls_price_reduction: 'Price Reduced', mls_high_dom: 'Long Time on Market',
+  };
+  if (!src) return 'Signal';
+  const k = src.toLowerCase().replace(/[^a-z_]/g,'');
+  return map[k] || src.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+}
+
+function statusLabel(s) {
+  const m = { new:'New', contacted:'Contacted', qualified:'Qualified', watching:'Watching', not_interested:'Not Interested' };
+  return m[s] || 'New';
+}
+
+function formatDate(d) {
+  if (!d) return '—';
+  const dt = new Date(d);
+  const now = new Date();
+  const diff = Math.floor((now - dt) / 86400000);
+  if (diff === 0) return 'Today';
+  if (diff === 1) return 'Yesterday';
+  if (diff < 7) return `${diff} days ago`;
+  return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function formatMT(d) {
+  if (!d) return null;
+  return new Date(d).toLocaleString('en-US', {
+    timeZone: 'America/Denver',
+    month: 'short', day: 'numeric',
+    hour: 'numeric', minute: '2-digit',
+    hour12: true
+  }) + ' MT';
+}
+
+function nextRun(lastRun) {
+  if (!lastRun) return null;
+  const last = new Date(lastRun);
+  // Next 4 AM MT
+  const next = new Date(last);
+  next.setDate(next.getDate() + 1);
+  next.setHours(4, 0, 0, 0);
+  const msDiff = next - new Date();
+  if (msDiff < 0) return 'Overdue — check pipeline';
+  const h = Math.floor(msDiff / 3600000);
+  const m = Math.floor((msDiff % 3600000) / 60000);
+  return `Next update in ${h}h ${m}m`;
+}
+
+/* ── DATA LOAD ─────────────────────────────────────────────────── */
+async function loadAll() {
+  try {
+    await Promise.all([loadKPI(), loadLeads(), loadMatches(), loadSources()]);
+  } catch(e) {
+    showToast('Could not connect to database. Check your Supabase key.', 'error');
+  }
+}
+
+async function loadKPI() {
+  try {
+    const rows = await sb('pp_kpi_cache', '?order=updated_at.desc&limit=1');
+    if (rows && rows.length) {
+      state.kpi = rows[0];
+      renderFreshness();
+    }
+  } catch(e) {}
+}
+
+async function loadLeads() {
+  try {
+    // Try leads cache first (fast)
+    let leads = [];
+    try {
+      const cache = await sb('pp_leads_cache', '?limit=1');
+      if (cache && cache.length && cache[0].leads) {
+        leads = typeof cache[0].leads === 'string' ? JSON.parse(cache[0].leads) : cache[0].leads;
+      }
+    } catch(e) {}
+
+    // Fall back to direct signals query
+    if (!leads.length) {
+      const raw = await sb('pp_scraper_signals',
+        '?order=score.desc&limit=200&select=id,address,city,county,score,tier,status,source,signal_data,notes,created_at,updated_at');
+      leads = raw || [];
+    }
+
+    state.leads = leads;
+    applyFilters();
+    renderStats();
+  } catch(e) {
+    document.getElementById('leadsList').innerHTML = '';
+    document.getElementById('leadsEmpty').classList.remove('hidden');
+  }
+}
+
+async function loadMatches() {
+  try {
+    let matches = [];
+    try {
+      const cache = await sb('pp_leads_cache', '?limit=1');
+      if (cache && cache.length && cache[0].conv_leads) {
+        matches = typeof cache[0].conv_leads === 'string' ? JSON.parse(cache[0].conv_leads) : cache[0].conv_leads;
+      }
+    } catch(e) {}
+
+    if (!matches.length) {
+      try {
+        const raw = await sb('pp_buyer_seller_matches', '?order=match_score.desc&limit=50');
+        matches = raw || [];
+      } catch(e) {}
+    }
+
+    state.matches = matches;
+    renderMatches();
+  } catch(e) {
+    renderMatches();
+  }
+}
+
+async function loadSources() {
+  try {
+    const rows = await sb('pp_source_cache', '?order=today.desc');
+    state.sources = rows || [];
+    renderSources();
+  } catch(e) {}
+}
+
+/* ── RENDER: FRESHNESS ─────────────────────────────────────────── */
+function renderFreshness() {
+  const k = state.kpi;
+  const ts = k.last_pipeline_run || k.updated_at;
+  const fmtd = formatMT(ts);
+  const next = ts ? nextRun(ts) : null;
+
+  // Sidebar
+  document.getElementById('sidebarFreshness').textContent = fmtd || 'No run yet';
+  document.getElementById('sidebarNext').textContent = next || '';
+
+  // Full block
+  const block = document.getElementById('freshnessBlock');
+  if (!block) return;
+  block.innerHTML = `
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+      <div style="width:12px;height:12px;border-radius:50%;background:var(--cool);animation:pulse 2s infinite;flex-shrink:0"></div>
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-weight:700;color:var(--ink)">Last pipeline run</div>
+        <div style="font-size:.85rem;color:var(--ink2)">${fmtd || 'Never — pipeline may not have run yet'}</div>
+      </div>
+    </div>
+    <div style="background:var(--paper2);border-radius:var(--radius-xs);padding:10px 14px;font-size:.8rem;color:var(--ink3)">
+      ${next || 'Pipeline runs daily at 4 AM MT. Check GitHub Actions if overdue.'}
+    </div>
+  `;
+}
+
+/* ── RENDER: STATS ─────────────────────────────────────────────── */
+function renderStats() {
+  const leads = state.leads;
+  const hot = leads.filter(l => (l.score||0) >= 75).length;
+  const warm = leads.filter(l => (l.score||0) >= 60 && (l.score||0) < 75).length;
+  const cool = leads.filter(l => (l.score||0) >= 40 && (l.score||0) < 60).length;
+  const matches = state.matches.length;
+
+  // Update nav counts
+  const hotCount = hot + warm;
+  document.getElementById('sidenav-hot').textContent = hotCount || '—';
+  document.getElementById('sidenav-match').textContent = matches || '—';
+  const mnHot = document.getElementById('mnav-hot');
+  if (hotCount > 0) { mnHot.textContent = hotCount; mnHot.style.display = 'flex'; }
+
+  document.getElementById('statGrid').innerHTML = `
+    <div class="stat-card hot-stat" onclick="setFilter('hot',null)">
+      <div class="stat-num hot">${hot}</div>
+      <div class="stat-label">Act Now</div>
+      ${hot > 0 ? '<div class="stat-action">Call today →</div>' : ''}
+    </div>
+    <div class="stat-card warm-stat" onclick="setFilter('warm',null)">
+      <div class="stat-num warm">${warm}</div>
+      <div class="stat-label">Follow Up</div>
+    </div>
+    <div class="stat-card cool-stat" onclick="setFilter('cool',null)">
+      <div class="stat-num" style="color:var(--cool)">${cool}</div>
+      <div class="stat-label">Watch</div>
+    </div>
+    <div class="stat-card match-stat" onclick="switchPage('matches',null)">
+      <div class="stat-num match">${matches}</div>
+      <div class="stat-label">Buyer Matches</div>
+      ${matches > 0 ? '<div class="stat-action" style="color:var(--blue)">View matches →</div>' : ''}
+    </div>
+  `;
+}
+
+/* ── RENDER: LEADS ─────────────────────────────────────────────── */
+function applyFilters() {
+  let list = [...state.leads];
+
+  // Search
+  if (state.search) {
+    const q = state.search.toLowerCase();
+    list = list.filter(l =>
+      (l.address||'').toLowerCase().includes(q) ||
+      (l.city||'').toLowerCase().includes(q) ||
+      (l.county||'').toLowerCase().includes(q) ||
+      (l.source||'').toLowerCase().includes(q)
+    );
+  }
+
+  // Tier filter
+  if (state.filter === 'hot') list = list.filter(l => (l.score||0) >= 75);
+  else if (state.filter === 'warm') list = list.filter(l => (l.score||0) >= 60 && (l.score||0) < 75);
+  else if (state.filter === 'cool') list = list.filter(l => (l.score||0) >= 40 && (l.score||0) < 60);
+
+  // County
+  if (state.county) list = list.filter(l => (l.county||'') === state.county);
+
+  state.filtered = list;
+  renderLeads();
+}
+
+function renderLeads() {
+  const container = document.getElementById('leadsList');
+  const empty = document.getElementById('leadsEmpty');
+  const list = state.filtered;
+
+  if (!list.length) {
+    container.innerHTML = '';
+    empty.classList.remove('hidden');
+    return;
+  }
+  empty.classList.add('hidden');
+
+  // Get signal data from signal_data JSONB or individual columns
+  function getSignals(lead) {
+    if (lead.signal_data && typeof lead.signal_data === 'object') {
+      return lead.signal_data.signals || [];
+    }
+    return lead.source ? [lead.source] : [];
+  }
+
+  function hasMatch(lead) {
+    return state.matches.some(m =>
+      (m.seller_address||m.address||'').toLowerCase() === (lead.address||'').toLowerCase() ||
+      (m.lead_id && m.lead_id === lead.id)
+    );
+  }
+
+  container.innerHTML = list.slice(0, 80).map(lead => {
+    const score = lead.score || 0;
+    const urg = getUrgency(score);
+    const signals = getSignals(lead);
+    const statusKey = (lead.status || 'new').toLowerCase().replace(/\s+/,'_');
+    const matched = hasMatch(lead);
+    const city = lead.city || lead.county || '';
+    const displayAddr = lead.address || 'Address not listed';
+
+    return `<div class="lead-card" onclick="openLead(${JSON.stringify(JSON.stringify(lead))})">
+      <div class="lead-strip ${urg.key}"></div>
+      <div class="lead-body">
+        <div class="lead-top">
+          <div class="lead-name">${displayAddr}</div>
+          <div class="lead-badge ${urg.key}">${urg.emoji} ${urg.label}</div>
+        </div>
+        <div class="lead-location">📍 ${city}${lead.county && city !== lead.county ? ', '+lead.county : ''} County</div>
+        <div class="lead-signals">
+          ${signals.slice(0,3).map(s => `<span class="signal-tag">${signalLabel(s)}</span>`).join('')}
+          ${signals.length > 3 ? `<span class="signal-tag">+${signals.length-3} more</span>` : ''}
+        </div>
+        <div class="lead-footer">
+          <div class="lead-score">Score: <span>${score}</span></div>
+          <div class="lead-meta">
+            <span><span class="lead-status-dot ${statusKey}"></span>${statusLabel(lead.status)}</span>
+            ${matched ? '<span class="match-icon">🤝 Buyer match</span>' : ''}
+            <span>${formatDate(lead.created_at)}</span>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ── LEAD DETAIL DRAWER ────────────────────────────────────────── */
+function openLead(leadJson) {
+  const lead = JSON.parse(leadJson);
+  state.currentLead = lead;
+
+  const score = lead.score || 0;
+  const urg = getUrgency(score);
+
+  // Header
+  document.getElementById('drawerTitle').textContent = lead.address || 'Property';
+  document.getElementById('drawerLoc').textContent =
+    [lead.city, lead.county ? lead.county + ' County' : ''].filter(Boolean).join(', ');
+
+  document.getElementById('drawerBadgeRow').innerHTML = `
+    <div class="lead-badge ${urg.key}">${urg.emoji} ${urg.label}</div>
+    ${lead.tier ? `<div style="background:var(--paper2);color:var(--ink3);font-size:.68rem;font-weight:700;padding:3px 8px;border-radius:20px;letter-spacing:.04em;text-transform:uppercase">${lead.tier}</div>` : ''}
+  `;
+
+  // Get signal list
+  let signals = [];
+  if (lead.signal_data && typeof lead.signal_data === 'object') {
+    signals = lead.signal_data.signals || [];
+  }
+  if (!signals.length && lead.source) signals = [lead.source];
+
+  // Buyer matches for this lead
+  const leadMatches = state.matches.filter(m =>
+    (m.seller_address||m.address||'').toLowerCase() === (lead.address||'').toLowerCase() ||
+    (m.lead_id && m.lead_id === lead.id)
+  );
+
+  const inQueue = state.queue.some(q => q.id === lead.id);
+  const statusKey = (lead.status || 'new').toLowerCase().replace(/\s+/,'_');
+
+  document.getElementById('drawerScroll').innerHTML = `
+    <!-- Score -->
+    <div class="drawer-section">
+      <div class="score-ring-wrap">
+        <div class="score-ring ${urg.key}">${score}</div>
+        <div>
+          <div class="score-explain-title">${urg.emoji} ${urg.label}</div>
+          <div class="score-explain-text">${scoreExplain(score, lead.source, signals)}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Signals -->
+    ${signals.length ? `
+    <div class="drawer-section">
+      <div class="drawer-section-title">Why this property</div>
+      ${signals.map(s => `
+        <div class="signal-block">
+          <div class="signal-block-name">${signalLabel(s)}</div>
+          <div class="signal-block-detail">${signalDescription(s, lead)}</div>
+        </div>
+      `).join('')}
+    </div>` : ''}
+
+    <!-- Property Details -->
+    <div class="drawer-section">
+      <div class="drawer-section-title">Property info</div>
+      <div class="detail-row"><span class="detail-key">Address</span><span class="detail-val">${lead.address||'—'}</span></div>
+      <div class="detail-row"><span class="detail-key">City</span><span class="detail-val">${lead.city||'—'}</span></div>
+      <div class="detail-row"><span class="detail-key">County</span><span class="detail-val">${lead.county||'—'}</span></div>
+      ${lead.parcel_id ? `<div class="detail-row"><span class="detail-key">Parcel ID</span><span class="detail-val" style="font-size:.75rem">${lead.parcel_id}</span></div>` : ''}
+      <div class="detail-row"><span class="detail-key">First seen</span><span class="detail-val">${formatDate(lead.created_at)}</span></div>
+      <div class="detail-row"><span class="detail-key">Last updated</span><span class="detail-val">${formatDate(lead.updated_at)}</span></div>
+    </div>
+
+    <!-- Buyer Matches -->
+    ${leadMatches.length ? `
+    <div class="drawer-section">
+      <div class="drawer-section-title">🤝 Buyer matches (${leadMatches.length})</div>
+      ${leadMatches.map(m => `
+        <div class="match-card">
+          <div class="match-card-head">
+            <span class="match-badge">Ready Buyer</span>
+            <span class="match-price">${m.price_min ? formatPrice(m.price_min) + '–' + formatPrice(m.price_max||m.price_min) : 'Price range available'}</span>
+          </div>
+          <div class="match-detail">${m.city||m.county||'Same area'} · ${m.buyer_type||'Pre-approved buyer'}</div>
+        </div>
+      `).join('')}
+      <div style="font-size:.74rem;color:var(--blue);margin-top:4px;font-weight:600;cursor:pointer" onclick="switchPage('matches',null);closeDrawer()">See all buyer matches →</div>
+    </div>` : ''}
+
+    <!-- Status -->
+    <div class="drawer-section">
+      <div class="drawer-section-title">Your status</div>
+      <div class="status-picker" id="statusPicker">
+        ${['new','contacted','qualified','watching','not_interested'].map(s => `
+          <div class="status-opt ${statusKey===s?'selected':''}" onclick="setLeadStatus('${s}',this)">${statusLabel(s)}</div>
+        `).join('')}
+      </div>
+    </div>
+
+    <!-- Notes -->
+    <div class="drawer-section">
+      <div class="drawer-section-title">Notes</div>
+      <textarea class="notes-area" id="notesArea" placeholder="Add your notes — what happened when you called, next steps, etc." oninput="scheduleNoteSave()">${lead.notes||''}</textarea>
+      <div class="notes-status" id="notesStatus"></div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="drawer-section">
+      <div class="drawer-section-title">Quick actions</div>
+      <div class="quick-actions">
+        <button class="quick-action-btn primary-action" onclick="markContacted()">📞 Mark Contacted</button>
+        <button class="quick-action-btn" id="queueToggleBtn" onclick="toggleQueue()">
+          ${inQueue ? '✅ On My List' : '+ Add to My List'}
+        </button>
+        ${lead.address ? `<button class="quick-action-btn" onclick="window.open('https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(lead.address+' '+lead.city+' Utah')}','_blank')">🗺 View on Map</button>` : ''}
+        ${lead.address ? `<button class="quick-action-btn" onclick="window.open('https://www.zillow.com/homes/${encodeURIComponent(lead.address)}','_blank')">🏠 Check Zillow</button>` : ''}
+      </div>
+    </div>
+    <div style="height:8px"></div>
+  `;
+
+  openDrawer();
+}
+
+function signalDescription(src, lead) {
+  const k = (src||'').toLowerCase();
+  if (k.includes('nts') || k.includes('trustee')) return 'A foreclosure sale has been scheduled. The property owner is under serious financial pressure and may be motivated to sell before the sale date.';
+  if (k.includes('nod') || k.includes('default')) return 'The owner has fallen behind on mortgage payments and a notice has been filed. This often precedes a foreclosure or motivated sale.';
+  if (k.includes('tax_lien') || k.includes('tax lien')) return 'A tax lien has been filed against this property, indicating unpaid taxes. Owners in this situation are often motivated to resolve quickly.';
+  if (k.includes('tax_del') || k.includes('delinquency')) return 'Property taxes are overdue. Continued non-payment can lead to tax sale — a strong indicator of financial pressure on the owner.';
+  if (k.includes('fsbo') || k.includes('ksl')) return 'This owner is already trying to sell on their own through KSL. Reaching out as a professional agent with a ready buyer is a strong pitch.';
+  if (k.includes('obituary') || k.includes('probate')) return 'Estate or probate activity detected near this address. Heirs often need to sell inherited property quickly.';
+  if (k.includes('deed')) return 'A recent deed transfer has been recorded on this property — often signals a change in ownership situation that can lead to a listing.';
+  if (k.includes('hmda') || k.includes('mortgage')) return 'Mortgage application activity detected — may indicate refinancing difficulty or change in financing status.';
+  if (k.includes('expired') || k.includes('mls_exp')) return 'This property was listed on the MLS but did not sell. The owner is likely frustrated and open to a different approach.';
+  if (k.includes('withdrawn')) return 'The owner pulled their listing before it sold — often a sign of unmet expectations or life circumstances changing.';
+  if (k.includes('price') || k.includes('reduction')) return 'The asking price was reduced on this active listing, signaling increased seller motivation.';
+  if (k.includes('dom') || k.includes('days')) return 'This property has been on the market a long time without selling — the seller may be willing to negotiate.';
+  return 'This signal type indicates potential seller motivation. Review the full property history for context.';
+}
+
+function formatPrice(n) {
+  if (!n) return '—';
+  if (n >= 1000000) return '$' + (n/1000000).toFixed(1) + 'M';
+  return '$' + Math.round(n/1000) + 'K';
+}
+
+/* ── STATUS & NOTES ────────────────────────────────────────────── */
+async function setLeadStatus(status, el) {
+  if (!state.currentLead) return;
+  document.querySelectorAll('#statusPicker .status-opt').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected');
+  state.currentLead.status = status;
+  // Update in list
+  const idx = state.leads.findIndex(l => l.id === state.currentLead.id);
+  if (idx > -1) state.leads[idx].status = status;
+  try {
+    await sbPatch('pp_scraper_signals', `id=eq.${state.currentLead.id}`, { status });
+    showToast('Status updated', 'success');
+  } catch(e) {
+    showToast('Could not save status', 'error');
+  }
+}
+
+function scheduleNoteSave() {
+  const st = document.getElementById('notesStatus');
+  if (st) st.textContent = 'Editing…';
+  clearTimeout(state.notesTimer);
+  state.notesTimer = setTimeout(saveNotes, 1200);
+}
+
+async function saveNotes() {
+  if (!state.currentLead) return;
+  const area = document.getElementById('notesArea');
+  const st = document.getElementById('notesStatus');
+  if (!area || !st) return;
+  const notes = area.value;
+  st.textContent = 'Saving…';
+  st.className = 'notes-status saving';
+  try {
+    const ok = await sbPatch('pp_scraper_signals', `id=eq.${state.currentLead.id}`, { notes });
+    if (ok) {
+      state.currentLead.notes = notes;
+      const idx = state.leads.findIndex(l => l.id === state.currentLead.id);
+      if (idx > -1) state.leads[idx].notes = notes;
+      st.textContent = 'Saved ✓';
+      st.className = 'notes-status saved';
+      setTimeout(() => { if (st) { st.textContent = ''; st.className = 'notes-status'; } }, 3000);
+    } else {
+      st.textContent = 'Could not save — check connection';
+      st.className = 'notes-status';
+    }
+  } catch(e) {
+    st.textContent = 'Could not save — check connection';
+    st.className = 'notes-status';
+  }
+}
+
+function markContacted() {
+  const opt = document.querySelector('#statusPicker .status-opt:nth-child(2)');
+  if (opt) setLeadStatus('contacted', opt);
+  showToast('Marked as contacted', 'success');
+}
+
+/* ── QUEUE ─────────────────────────────────────────────────────── */
+function toggleQueue() {
+  if (!state.currentLead) return;
+  const lead = state.currentLead;
+  const idx = state.queue.findIndex(q => q.id === lead.id);
+  const btn = document.getElementById('queueToggleBtn');
+  if (idx > -1) {
+    state.queue.splice(idx, 1);
+    if (btn) btn.textContent = '+ Add to My List';
+    showToast('Removed from list');
+  } else {
+    state.queue.push({ id: lead.id, address: lead.address, city: lead.city, county: lead.county, score: lead.score, status: lead.status, added: new Date().toISOString() });
+    if (btn) btn.textContent = '✅ On My List';
+    showToast('Added to My List ✓', 'success');
+  }
+  localStorage.setItem('pp_queue', JSON.stringify(state.queue));
+  updateQueueCount();
+}
+
+function updateQueueCount() {
+  const n = state.queue.length;
+  document.getElementById('sidenav-queue').textContent = n || '0';
+  const mb = document.getElementById('mnav-queue');
+  if (n > 0) { mb.textContent = n; mb.style.display = 'flex'; }
+  else mb.style.display = 'none';
+}
+
+function renderQueue() {
+  const container = document.getElementById('queueList');
+  const empty = document.getElementById('queueEmpty');
+  if (!state.queue.length) {
+    container.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+  // Enrich queue items from leads
+  const enriched = state.queue.map(q => {
+    const live = state.leads.find(l => l.id === q.id);
+    return live ? { ...q, ...live } : q;
+  });
+
+  container.innerHTML = enriched.map(lead => {
+    const score = lead.score || 0;
+    const urg = getUrgency(score);
+    return `<div class="queue-item" onclick="openLead(${JSON.stringify(JSON.stringify(lead))})">
+      <div class="queue-item-strip" style="background:var(--${urg.key === 'neutral' ? 'neutral' : urg.key})"></div>
+      <div class="queue-item-body">
+        <div class="queue-item-name">${lead.address || '—'}</div>
+        <div class="queue-item-meta">${urg.emoji} ${urg.label} · ${lead.city||lead.county||'—'} · ${statusLabel(lead.status)}</div>
+      </div>
+      <div class="queue-item-action">${urg.key === 'hot' ? 'Call now' : 'Follow up'}</div>
+      <button class="queue-remove" onclick="event.stopPropagation();removeFromQueue('${lead.id}')" title="Remove">✕</button>
+    </div>`;
+  }).join('');
+}
+
+function removeFromQueue(id) {
+  state.queue = state.queue.filter(q => q.id != id);
+  localStorage.setItem('pp_queue', JSON.stringify(state.queue));
+  updateQueueCount();
+  renderQueue();
+  showToast('Removed from list');
+}
+
+/* ── MATCHES PAGE ──────────────────────────────────────────────── */
+function renderMatches() {
+  const container = document.getElementById('matchesList');
+  const empty = document.getElementById('matchesEmpty');
+  const matches = state.matches;
+
+  if (!matches.length) {
+    container.innerHTML = '';
+    empty.classList.remove('hidden');
+    document.getElementById('sidenav-match').textContent = '0';
+    return;
+  }
+  empty.classList.add('hidden');
+  document.getElementById('sidenav-match').textContent = matches.length;
+
+  container.innerHTML = matches.slice(0, 30).map(m => {
+    const matchScore = m.match_score || m.score || 0;
+    const sellerAddr = m.seller_address || m.address || 'Address not listed';
+    const buyerPriceMin = m.price_min || m.buyer_price_min;
+    const buyerPriceMax = m.price_max || m.buyer_price_max;
+    const priceRange = (buyerPriceMin && buyerPriceMax) ? `${formatPrice(buyerPriceMin)}–${formatPrice(buyerPriceMax)}` : 'Range available';
+    const county = m.county || m.seller_county || '';
+    const buyerType = m.buyer_type || 'Pre-qualified buyer';
+    const sellerScore = m.seller_score || m.signal_score || 0;
+    const sellerUrg = getUrgency(sellerScore);
+
+    return `<div class="match-opportunity" onclick="openMatchLead(${JSON.stringify(JSON.stringify(m))})">
+      <div class="match-opp-head">
+        <div class="match-opp-title">${sellerAddr}</div>
+        <div class="match-score-badge">Match ${matchScore}</div>
+      </div>
+      <div class="match-opp-pitch">
+        <div class="match-opp-pitch-label">Your pitch</div>
+        <div class="match-opp-pitch-text">"I have a ${buyerType} ready to buy in ${county||'your area'} in the ${priceRange} range. Can we talk about your home?"</div>
+      </div>
+      <div class="match-opp-details">
+        <div class="match-opp-detail"><strong>Seller urgency:</strong> ${sellerUrg.emoji} ${sellerUrg.label}</div>
+        <div class="match-opp-detail"><strong>Buyer budget:</strong> ${priceRange}</div>
+        <div class="match-opp-detail"><strong>Area:</strong> ${county||'—'}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openMatchLead(mJson) {
+  const m = JSON.parse(mJson);
+  // Find the seller in leads list and open drawer
+  const lead = state.leads.find(l =>
+    (l.address||'').toLowerCase() === (m.seller_address||m.address||'').toLowerCase() ||
+    (m.lead_id && l.id === m.lead_id)
+  );
+  if (lead) {
+    openLead(JSON.stringify(lead));
+  } else {
+    // Open with match data as lead
+    const synth = {
+      id: m.id || m.lead_id,
+      address: m.seller_address || m.address,
+      city: m.city || m.seller_city,
+      county: m.county || m.seller_county,
+      score: m.seller_score || m.signal_score || 0,
+      source: m.source || 'Convergence Match',
+      status: m.status || 'new',
+      notes: m.notes || '',
+    };
+    openLead(JSON.stringify(synth));
+  }
+}
+
+/* ── STATUS PAGE ───────────────────────────────────────────────── */
+function renderStatusPage() {
+  const grid = document.getElementById('statusGrid');
+  grid.innerHTML = `
+    <div class="status-block">
+      <div class="status-block-head">
+        <div class="status-indicator live"></div>
+        <div class="status-block-title">Signal Pipeline</div>
+      </div>
+      <div class="status-block-detail">44+ sources running daily at 4 AM MT</div>
+      <div class="status-block-value">Live</div>
+    </div>
+    <div class="status-block">
+      <div class="status-block-head">
+        <div class="status-indicator live"></div>
+        <div class="status-block-title">Database</div>
+      </div>
+      <div class="status-block-detail">Supabase · 76K+ records</div>
+      <div class="status-block-value">Connected</div>
+    </div>
+    <div class="status-block">
+      <div class="status-block-head">
+        <div class="status-indicator staged"></div>
+        <div class="status-block-title">AI Outreach (Bryce)</div>
+      </div>
+      <div class="status-block-detail">VAPI configured · human-initiated only</div>
+      <div class="status-block-value">Staged — not yet active</div>
+    </div>
+    <div class="status-block">
+      <div class="status-block-head">
+        <div class="status-indicator blocked"></div>
+        <div class="status-block-title">Phone Numbers</div>
+      </div>
+      <div class="status-block-detail">Skip trace service not yet funded</div>
+      <div class="status-block-value">Pending activation</div>
+    </div>
+  `;
+}
+
+function renderSources() {
+  const container = document.getElementById('sourcesList');
+  if (!state.sources.length) {
+    container.innerHTML = '<div style="font-size:.8rem;color:var(--ink3);padding:8px">No source data yet — check after the 4 AM pipeline run.</div>';
+    return;
+  }
+  container.innerHTML = state.sources.map(s => {
+    const active = (s.today || 0) > 0;
+    return `<div style="background:var(--white);border:1px solid var(--paper3);border-radius:var(--radius-xs);padding:10px 12px;display:flex;align-items:center;gap:8px">
+      <div class="status-indicator ${active ? 'live' : 'offline'}"></div>
+      <div>
+        <div style="font-size:.78rem;font-weight:600;color:var(--ink)">${signalLabel(s.source_slug)}</div>
+        <div style="font-size:.7rem;color:var(--ink3)">${active ? `+${s.today} today` : 'No activity today'}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ── DRAWER CONTROL ────────────────────────────────────────────── */
+function openDrawer() {
+  document.getElementById('drawerOverlay').classList.add('open');
+  document.getElementById('leadDrawer').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDrawer() {
+  clearTimeout(state.notesTimer);
+  document.getElementById('drawerOverlay').classList.remove('open');
+  document.getElementById('leadDrawer').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+/* ── NAV / PAGE ────────────────────────────────────────────────── */
+function switchPage(page, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+
+  // Desktop nav
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll(`[data-page="${page}"]`).forEach(b => b.classList.add('active'));
+
+  // Mobile nav
+  document.querySelectorAll('.mnav-btn').forEach(b => b.classList.remove('active'));
+
+  if (page === 'queue') renderQueue();
+  if (page === 'status') { renderStatusPage(); renderFreshness(); }
+}
+
+function setFilter(f, el) {
+  state.filter = f;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  if (el) el.classList.add('active');
+  else {
+    const chip = document.querySelector(`[data-filter="${f}"]`);
+    if (chip) chip.classList.add('active');
+  }
+  applyFilters();
+}
+
+function handleSearch(val) {
+  state.search = val;
+  const clear = document.getElementById('searchClear');
+  if (clear) clear.classList.toggle('hidden', !val);
+  // Switch to leads page
+  const leadsPage = document.getElementById('page-leads');
+  if (!leadsPage.classList.contains('active')) switchPage('leads', null);
+  applyFilters();
+}
+
+function clearSearch() {
+  const input = document.getElementById('searchInput');
+  if (input) input.value = '';
+  state.search = '';
+  document.getElementById('searchClear').classList.add('hidden');
+  applyFilters();
+}
+
+function applyFilters() {
+  const countyFilter = document.getElementById('countyFilter');
+  state.county = countyFilter ? countyFilter.value : '';
+  let list = [...state.leads];
+  if (state.search) {
+    const q = state.search.toLowerCase();
+    list = list.filter(l =>
+      (l.address||'').toLowerCase().includes(q) ||
+      (l.city||'').toLowerCase().includes(q) ||
+      (l.county||'').toLowerCase().includes(q)
+    );
+  }
+  if (state.filter === 'hot') list = list.filter(l => (l.score||0) >= 75);
+  else if (state.filter === 'warm') list = list.filter(l => (l.score||0) >= 60 && (l.score||0) < 75);
+  else if (state.filter === 'cool') list = list.filter(l => (l.score||0) >= 40 && (l.score||0) < 60);
+  if (state.county) list = list.filter(l => (l.county||'') === state.county);
+  state.filtered = list;
+  renderLeads();
+}
+
+function refreshData() {
+  showToast('Refreshing data…');
+  loadAll().then(() => showToast('Data refreshed ✓', 'success'));
+}
+
+/* ── TOAST ─────────────────────────────────────────────────────── */
+let toastTimer;
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (type ? ' ' + type : '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.className = 'toast'; }, 2400);
+}
+
+/* ── MOBILE SIDEBAR ────────────────────────────────────────────── */
+function toggleMobileSidebar() {
+  // Simple toggle — show the sidebar as an overlay on mobile
+  const sb = document.querySelector('.sidebar');
+  if (!sb) return;
+  if (sb.style.display === 'flex') {
+    sb.style.display = '';
+    sb.style.position = '';
+  } else {
+    sb.style.display = 'flex';
+    sb.style.position = 'fixed';
+    sb.style.zIndex = '300';
+  }
+}
+
+/* ── KEYBOARD ──────────────────────────────────────────────────── */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeDrawer();
+  if ((e.key === '/' || e.key === 'k') && (e.metaKey || e.ctrlKey)) {
+    e.preventDefault();
+    document.getElementById('searchInput')?.focus();
+  }
+});
+
+/* ── INIT ───────────────────────────────────────────────────────── */
+updateQueueCount();
+loadAll();
+
+// Show demo data notice if key not set
+if (SUPABASE_ANON_KEY === 'YOUR_SUPABASE_ANON_KEY_HERE') {
+  setTimeout(() => {
+    showToast('⚙️ Set your Supabase key to load real data', '');
+    document.getElementById('leadsList').innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">⚙️</div>
+        <div class="empty-title">Setup needed</div>
+        <div class="empty-sub">Open the HTML file, find <strong>SUPABASE_ANON_KEY</strong> near the top, and replace <em>YOUR_SUPABASE_ANON_KEY_HERE</em> with your actual anon key from the Supabase dashboard.<br><br>Your Supabase project URL is already set to:<br><code style="background:var(--paper2);padding:2px 6px;border-radius:3px;font-size:.75rem">${SUPABASE_URL}</code></div>
+      </div>`;
+  }, 500);
+}
+</script>
+</body>
+</html>
