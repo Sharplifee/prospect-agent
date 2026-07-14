@@ -431,11 +431,11 @@ a{text-decoration:none;color:inherit}
 
         <!-- Legend -->
         <div class="legend">
-          <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>Act Now — Score 75+, call today</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>Act Now — Score 88+, call today</div>
           <div style="width:1px;height:14px;background:var(--border)"></div>
-          <div class="legend-item"><div class="legend-dot" style="background:var(--amber)"></div>Follow Up — Score 60–74, this week</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--amber)"></div>Follow Up — Score 75–87, this week</div>
           <div style="width:1px;height:14px;background:var(--border)"></div>
-          <div class="legend-item"><div class="legend-dot" style="background:var(--teal)"></div>Watch — Score 40–59</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--teal)"></div>Watch — Score 40–74</div>
           <div style="width:1px;height:14px;background:var(--border)"></div>
           <div class="legend-item"><div class="legend-dot" style="background:var(--text4)"></div>Early Signal — below 40</div>
         </div>
@@ -578,8 +578,8 @@ function norm(r) {
   const score = r.score || 0;
   const stage = r.primed_stage;
   let tier = 'watch';
-  if (stage === 2 || score >= 75) tier = 'p2';
-  else if (stage === 1 || score >= 60) tier = 'p1';
+  if (stage === 2 || score >= 88) tier = 'p2';
+  else if (stage === 1 || score >= 75) tier = 'p1';
   else if (score >= 40) tier = 'qual';
 
   return {
@@ -786,13 +786,13 @@ function renderKPIs() {
     <div class="kpi p2" onclick="setFilter('p2',null)">
       <div class="kpi-num p2">${fmtN(p2)}</div>
       <div class="kpi-label">Act Now</div>
-      <div class="kpi-sub">Score 75+ · Call today</div>
+      <div class="kpi-sub">Score 88+ · Call today</div>
       ${p2>0?'<div class="kpi-cta">↗ Open leads</div>':''}
     </div>
     <div class="kpi p1" onclick="setFilter('p1',null)">
       <div class="kpi-num" style="color:var(--amber)">${fmtN(p1)}</div>
       <div class="kpi-label">Follow Up</div>
-      <div class="kpi-sub">Score 60–74 · This week</div>
+      <div class="kpi-sub">Score 75–87 · This week</div>
     </div>
     <div class="kpi total">
       <div class="kpi-num teal">${fmtN(total)}</div>
